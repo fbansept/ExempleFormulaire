@@ -5,12 +5,16 @@ public class HelperForm {
 
     private HelperForm(){}
 
+    public static final int ALIGN_RIGHT = 1;
+    public static final int ALIGN_LEFT = 2;
+
     public static Box generateRow(
             JComponent component,
             int marginTop,
             int marginRight,
             int marginBottom,
-            int marginLeft
+            int marginLeft,
+            int alignement
     ) {
         Box conteneurVertical = Box.createVerticalBox();
 
@@ -25,6 +29,10 @@ public class HelperForm {
 
         //ajout de la marge horizontale à gauche
         conteneurHorizontal.add(Box.createRigidArea(new Dimension(marginLeft,1)));
+
+        if(alignement == ALIGN_RIGHT) {
+            conteneurHorizontal.add(Box.createHorizontalGlue());
+        }
 
         conteneurHorizontal.add(component);
 
