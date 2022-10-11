@@ -1,6 +1,6 @@
 package edu.fbansept.exempleformulaire.models;
 
-public class Pays {
+public class Pays extends Object{
     protected String nom;
     protected String iso;
     protected String image;
@@ -10,6 +10,11 @@ public class Pays {
         this.iso = iso;
         this.image = image;
     }
+
+    //    @Override
+//    public String toString() {
+//        return this.iso + "-" + this.nom;
+//    }
 
     public String getNom() {
         return nom;

@@ -4,10 +4,13 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import edu.fbansept.exempleformulaire.models.Pays;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
+import java.io.IOException;
 
 public class FenetrePrincipale extends JFrame implements WindowListener {
 
@@ -91,8 +94,36 @@ public class FenetrePrincipale extends JFrame implements WindowListener {
                 new Pays("Allemagne", "DE", "de.png")
         };
 
+        System.out.println(listePays[0]);
+
         JComboBox<Pays> selectPays = new JComboBox<>(listePays);
         selectPays.setMaximumSize(new Dimension(300,30));
+
+        selectPays.setRenderer(new DefaultListCellRenderer(){
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+
+                Pays pays = (Pays)value;
+                setText(pays.getNom());
+
+                try {
+                    //on charge l'image de drapeau correspond au pays
+                    Image image = ImageIO.read(new File("src/main/resources/drapeaux/" + pays.getImage()));
+
+                    //on redimensionne l'image
+                    Image resizedImage = image.getScaledInstance(20, 16, Image.SCALE_SMOOTH);
+
+                    setIconTextGap(10);
+
+                    //on change l'icone du JLabel par l'image redimensionnée
+                    setIcon(new ImageIcon(resizedImage));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                return this;
+            }
+        });
 
         formulaire.add(HelperForm.generateField("Pays",selectPays));
 
