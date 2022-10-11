@@ -1,5 +1,8 @@
+package edu.fbansept.exempleformulaire;
+
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatLightLaf;
+import edu.fbansept.exempleformulaire.models.Pays;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,14 +54,48 @@ public class FenetrePrincipale extends JFrame implements WindowListener {
         boutonValider.addActionListener(e -> System.out.println("Formulaire validé"));
         boutonValider.setSize(new Dimension(100, 30));
 
-        //---------- DISPOSITION DES COMPOSANTS -------
+        //---------- BOUTONS DU HAUT -------
         panneau.add(
                 HelperForm.generateRow(boutonTheme,10,10,0,0, HelperForm.ALIGN_RIGHT),
                 BorderLayout.NORTH);
 
+        //---------- BOUTONS DU BAS -------
+
         panneau.add(
                 HelperForm.generateRow(boutonValider,0,10,10,0, HelperForm.ALIGN_RIGHT),
                 BorderLayout.SOUTH);
+
+        //---------------- FORMULAIRE ------------------
+
+
+        Box formulaire = Box.createVerticalBox();
+        //formulaire.setBorder(BorderFactory.createLineBorder(Color.RED));
+
+        panneau.add(formulaire, BorderLayout.CENTER);
+
+
+        //---------------- LISTE CIVILITE ------------------
+
+        String[] listeCivilites = {"Monsieur","Madame","Mademoiselle","Autre"};
+        JComboBox<String> selectCivilite = new JComboBox<>(listeCivilites);
+        selectCivilite.setMaximumSize(new Dimension(200,30));
+
+        formulaire.add(HelperForm.generateField(
+                "Civilité",selectCivilite));
+
+
+        //---------------- LISTE PAYS ------------------
+        Pays[] listePays = {
+                new Pays("France", "FR", "fr.png"),
+                new Pays("Royaume-unis", "GBR", "gb.png"),
+                new Pays("Allemagne", "DE", "de.png")
+        };
+
+        JComboBox<Pays> selectPays = new JComboBox<>(listePays);
+        selectPays.setMaximumSize(new Dimension(300,30));
+
+        formulaire.add(HelperForm.generateField("Pays",selectPays));
+
 
         setVisible(true);
     }
