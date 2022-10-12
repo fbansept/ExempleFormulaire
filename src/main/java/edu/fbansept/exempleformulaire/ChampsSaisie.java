@@ -1,12 +1,16 @@
 package edu.fbansept.exempleformulaire;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 
 public class ChampsSaisie extends Box {
     protected JTextField textField = new JTextField();
     protected JLabel icone = new JLabel();
     protected JLabel message = new JLabel();
+
+    protected Border borderOriginal;
+
     public ChampsSaisie() {
         super(BoxLayout.Y_AXIS);
         Box ligne1 = Box.createHorizontalBox();
@@ -19,6 +23,8 @@ public class ChampsSaisie extends Box {
         ligne2.add(message);
         ligne2.add(Box.createHorizontalGlue());
         add(ligne2);
+
+        borderOriginal = textField.getBorder();
     }
 
     public void erreur(String texte) {
@@ -28,8 +34,8 @@ public class ChampsSaisie extends Box {
     }
 
     public void resetMessage() {
-        //supprimer la bordure du texfield
-        //remettre le text du JLabel message à vide
+        textField.setBorder(borderOriginal);
+        message.setText("");
     }
 
     public String getText() {
