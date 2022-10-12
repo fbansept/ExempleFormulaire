@@ -80,7 +80,7 @@ public class FenetrePrincipale extends JFrame implements WindowListener {
 
         //---------------- CHAMPS TEXT : NOM ---------------
 
-        ChampsSaisie champsNom = new ChampsSaisie();
+        ChampsSaisie champsNom = new ChampsSaisie("[\\p{L}\s]");
         formulaire.add(
                 HelperForm.generateField("Nom", champsNom)
         );
