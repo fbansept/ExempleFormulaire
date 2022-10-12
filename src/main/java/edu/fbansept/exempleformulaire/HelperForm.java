@@ -10,8 +10,25 @@ public class HelperForm {
     public static final int ALIGN_RIGHT = 1;
     public static final int ALIGN_LEFT = 2;
 
+    public static Box generateField(
+            String texteLabel,
+            Component component) {
+        return generateField(texteLabel,component,200);
+    }
 
-    public static Box generateField(String texteLabel, Component component) {
+    public static Box generateField(
+            String texteLabel,
+            Component component,
+            int largeur) {
+
+        if(component instanceof JTextField || component instanceof JComboBox) {
+            component.setMaximumSize(new Dimension(largeur, 30));
+            component.setPreferredSize(new Dimension(largeur, 30));
+        } else if (component instanceof ChampsSaisie champs) {
+            //ChampsSaisie champs = (ChampsSaisie)component;
+            champs.getTextField().setMaximumSize(new Dimension(largeur, 30));
+            champs.getTextField().setPreferredSize(new Dimension(largeur, 30));
+        }
 
         Box champs = Box.createHorizontalBox();
         champs.add(Box.createRigidArea(new Dimension(10,1)));

@@ -28,6 +28,8 @@ public class FenetrePrincipale extends JFrame implements WindowListener {
         JPanel panneau = new JPanel(new BorderLayout());
         setContentPane(panneau);
 
+        ChampsSaisie boite = new ChampsSaisie();
+
         //--------- BOUTON THEME -----------
 
         JButton boutonTheme = new JButton("Changer le theme");
@@ -50,23 +52,14 @@ public class FenetrePrincipale extends JFrame implements WindowListener {
             }
         );
 
-        //--------- BOUTON VALIDER FORMULAIRE -----------
 
-        JButton boutonValider = new JButton("Enregistrer");
-
-        boutonValider.addActionListener(e -> System.out.println("Formulaire validé"));
-        boutonValider.setSize(new Dimension(100, 30));
 
         //---------- BOUTONS DU HAUT -------
         panneau.add(
                 HelperForm.generateRow(boutonTheme,10,10,0,0, HelperForm.ALIGN_RIGHT),
                 BorderLayout.NORTH);
 
-        //---------- BOUTONS DU BAS -------
 
-        panneau.add(
-                HelperForm.generateRow(boutonValider,0,10,10,0, HelperForm.ALIGN_RIGHT),
-                BorderLayout.SOUTH);
 
         //---------------- FORMULAIRE ------------------
 
@@ -81,10 +74,23 @@ public class FenetrePrincipale extends JFrame implements WindowListener {
 
         String[] listeCivilites = {"Monsieur","Madame","Mademoiselle","Autre"};
         JComboBox<String> selectCivilite = new JComboBox<>(listeCivilites);
-        selectCivilite.setMaximumSize(new Dimension(200,30));
 
         formulaire.add(HelperForm.generateField(
                 "Civilité",selectCivilite));
+
+        //---------------- CHAMPS TEXT : NOM ---------------
+
+        ChampsSaisie champsNom = new ChampsSaisie();
+        formulaire.add(
+                HelperForm.generateField("Nom", champsNom)
+        );
+
+        //---------------- CHAMPS TEXT : PRENOM ---------------
+
+        JTextField champsPrenom = new JTextField();
+        formulaire.add(
+                HelperForm.generateField("Prénom", champsPrenom)
+        );
 
 
         //---------------- LISTE PAYS ------------------
@@ -97,7 +103,6 @@ public class FenetrePrincipale extends JFrame implements WindowListener {
         System.out.println(listePays[0]);
 
         JComboBox<Pays> selectPays = new JComboBox<>(listePays);
-        selectPays.setMaximumSize(new Dimension(300,30));
 
         selectPays.setRenderer(new DefaultListCellRenderer(){
             @Override
@@ -125,8 +130,57 @@ public class FenetrePrincipale extends JFrame implements WindowListener {
             }
         });
 
-        formulaire.add(HelperForm.generateField("Pays",selectPays));
+        formulaire.add(
+                HelperForm.generateField("Pays",selectPays)
+        );
 
+
+        //--------- BOUTON VALIDER FORMULAIRE -----------
+
+        JButton boutonValider = new JButton("Enregistrer");
+
+        boutonValider.addActionListener(e -> {
+
+            boolean erreurNom = false;
+            boolean erreurPrenom = false;
+
+            String message = "Le formulaire comporte des erreurs : ";
+
+            champsNom.resetMessage();
+//          champsNom.setBorder(BorderFactory.createEmptyBorder());
+            champsPrenom.setBorder(BorderFactory.createEmptyBorder());
+
+            if(champsNom.getText().equals("")) {
+                erreurNom = true;
+                message += "\n - Nom obligatoire,";
+                champsNom.erreur("Champs obligatoire");
+            }
+            if(champsPrenom.getText().equals("")) {
+                erreurPrenom = true;
+                message += "\n - Prénom obligatoire,";
+                champsPrenom.setBorder(BorderFactory.createLineBorder(Color.red));
+            }
+
+            //on supprime la dernière des virgules
+            message = message.substring(0,message.length()-1);
+
+            if(erreurNom || erreurPrenom) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        message,
+                        "Erreur de saisie",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
+        boutonValider.setSize(new Dimension(100, 30));
+
+        //---------- BOUTONS DU BAS -------
+
+        panneau.add(
+                HelperForm.generateRow(boutonValider,0,10,10,0, HelperForm.ALIGN_RIGHT),
+                BorderLayout.SOUTH);
 
         setVisible(true);
     }
