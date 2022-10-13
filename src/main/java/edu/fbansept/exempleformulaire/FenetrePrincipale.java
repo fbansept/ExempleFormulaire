@@ -7,6 +7,8 @@ import edu.fbansept.exempleformulaire.models.Pays;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
@@ -100,6 +102,30 @@ public class FenetrePrincipale extends JFrame implements WindowListener {
         formulaire.add(
                 HelperForm.generateField("Email", champsEmail)
         );
+
+        champsEmail.getTextField().addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {}
+            @Override
+            public void keyPressed(KeyEvent e) {}
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+                if(champsEmail.getText().equals("")) {
+                    champsEmail.erreur("Champs obligatoire");
+                } else {
+
+                    String regex = "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher(champsEmail.getText());
+
+                    if(!matcher.matches()){
+                        champsEmail.erreur("Format invalide");
+                    }
+                }
+            }
+        });
 
 
         //---------------- LISTE PAYS ------------------

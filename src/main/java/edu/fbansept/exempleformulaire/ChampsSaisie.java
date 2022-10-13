@@ -90,9 +90,6 @@ public class ChampsSaisie extends Box {
             }
             @Override
             public void keyPressed(KeyEvent e) {
-                if(e.getKeyChar() == 'a' || e.getKeyChar() == 'b') {
-                    System.out.println("ok");
-                }
             }
             @Override
             public void keyReleased(KeyEvent e) {
