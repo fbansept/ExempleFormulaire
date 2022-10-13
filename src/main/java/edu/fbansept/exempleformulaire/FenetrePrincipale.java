@@ -3,6 +3,7 @@ package edu.fbansept.exempleformulaire;
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import edu.fbansept.exempleformulaire.models.Pays;
+import edu.fbansept.exempleformulaire.models.Utilisateur;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -11,8 +12,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +22,27 @@ public class FenetrePrincipale extends JFrame implements WindowListener {
     protected int defaultMargin = 10;
 
     public FenetrePrincipale() {
+
+        ObjectInputStream ois = null;
+
+        try {
+            FileInputStream fichier = new FileInputStream("personne.eesc");
+            ois = new ObjectInputStream(fichier);
+            Utilisateur utilisateurFichier = (Utilisateur)ois.readObject();
+            System.out.println(utilisateurFichier.getNom());
+            ois.close();
+
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Impossible d'ouvrir le fichier");
+        } catch (ClassNotFoundException | ClassCastException e) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Fichier corrompu");
+        }
+
+
         setSize(500,500);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
@@ -256,6 +277,38 @@ public class FenetrePrincipale extends JFrame implements WindowListener {
                         message,
                         "Erreur de saisie",
                         JOptionPane.WARNING_MESSAGE);
+            } else {
+                //----------- si il n'y a pas d'erreur --------
+
+                Utilisateur nouvelUtilisateur = new Utilisateur(
+                        (String)selectCivilite.getSelectedItem(),
+                        champsNom.getText(),
+                        champsPrenom.getText(),
+                        champsEmail.getText(),
+                        (Pays)selectPays.getSelectedItem(),
+                        Integer.parseInt(champsAge.getText()),
+                        champsMarie.isSelected()
+                );
+
+                ObjectOutputStream oos = null;
+
+                try {
+                    FileOutputStream fichier = new FileOutputStream("personne.eesc");
+
+                    oos = new ObjectOutputStream(fichier);
+                    oos.writeObject(nouvelUtilisateur);
+                    oos.flush();
+                    oos.close();
+
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "L'utilisateur " + nouvelUtilisateur.getNom() + " a bien été ajouté");
+
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Impossible d'enregistrer l'utilisateur");
+                }
             }
         });
 
