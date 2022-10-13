@@ -16,11 +16,10 @@ import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FenetrePrincipale extends JFrame implements WindowListener {
+public class FenetreFormulaire extends JFrame {
 
-    protected boolean themeSombreActif = true;
+
     protected int defaultMargin = 10;
-
 
     protected JComboBox<String> selectCivilite;
     protected ChampsSaisie champsNom;
@@ -30,58 +29,24 @@ public class FenetrePrincipale extends JFrame implements WindowListener {
     protected ChampsSaisie champsAge;
     protected JCheckBox champsMarie;
 
-    public FenetrePrincipale() {
+    public FenetreFormulaire() {
 
         setSize(500,500);
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-
-        addWindowListener(this);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         //ajout du panneau principal avec un layout de 5 zones
         // (NORTH, SOUTH, EAST, WEST, CENTER)
         JPanel panneau = new JPanel(new BorderLayout());
         setContentPane(panneau);
 
-        ChampsSaisie boite = new ChampsSaisie();
-
-        //--------- BOUTON THEME -----------
-
-        JButton boutonTheme = new JButton("Changer le theme");
-
-
-        boutonTheme.addActionListener(
-            e -> {
-                try {
-                    if(themeSombreActif) {
-                        UIManager.setLookAndFeel(new FlatLightLaf());
-                    } else {
-                        UIManager.setLookAndFeel(new FlatDarculaLaf());
-                    }
-                    SwingUtilities.updateComponentTreeUI(this);
-                    themeSombreActif = !themeSombreActif;
-
-                } catch (UnsupportedLookAndFeelException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        );
-
-
-
-        //---------- BOUTONS DU HAUT -------
-        panneau.add(
-                HelperForm.generateRow(boutonTheme,10,10,0,0, HelperForm.ALIGN_RIGHT),
-                BorderLayout.NORTH);
-
-
 
         //---------------- FORMULAIRE ------------------
 
 
-        Box formulaire = Box.createVerticalBox();
+        Box boxFormulaire = Box.createVerticalBox();
         //formulaire.setBorder(BorderFactory.createLineBorder(Color.RED));
 
-        panneau.add(formulaire, BorderLayout.CENTER);
+        panneau.add(boxFormulaire, BorderLayout.CENTER);
 
 
         //---------------- LISTE CIVILITE ------------------
@@ -89,27 +54,27 @@ public class FenetrePrincipale extends JFrame implements WindowListener {
         String[] listeCivilites = {"Monsieur","Madame","Mademoiselle","Autre"};
         selectCivilite = new JComboBox<>(listeCivilites);
 
-        formulaire.add(HelperForm.generateField(
+        boxFormulaire.add(HelperForm.generateField(
                 "Civilité",selectCivilite));
 
         //---------------- CHAMPS TEXT : NOM ---------------
 
         champsNom = new ChampsSaisie("[\\p{L}\s'-]");
-        formulaire.add(
+        boxFormulaire.add(
                 HelperForm.generateField("Nom", champsNom)
         );
 
         //---------------- CHAMPS TEXT : PRENOM ---------------
 
         champsPrenom = new ChampsSaisie("[\\p{L}\s'-]");
-        formulaire.add(
+        boxFormulaire.add(
                 HelperForm.generateField("Prénom", champsPrenom)
         );
 
         //---------------- CHAMPS TEXT : EMAIL ---------------
 
         champsEmail = new ChampsSaisie("[a-zA-Z0-9@\\.-]");
-        formulaire.add(
+        boxFormulaire.add(
                 HelperForm.generateField("Email", champsEmail)
         );
 
@@ -173,7 +138,7 @@ public class FenetrePrincipale extends JFrame implements WindowListener {
             }
         });
 
-        formulaire.add(
+        boxFormulaire.add(
                 HelperForm.generateField("Pays",selectPays)
         );
 
@@ -181,13 +146,13 @@ public class FenetrePrincipale extends JFrame implements WindowListener {
         //---------------- CHAMPS TEXT : AGE ---------------
 
         champsAge = new ChampsSaisie("[0-9]");
-        formulaire.add(
+        boxFormulaire.add(
                 HelperForm.generateField("Age", champsAge,50));
 
         //---------------- CHAMPS CHECKBOX : MARIE/PACSE ---------------
 
         champsMarie = new JCheckBox();
-        formulaire.add(
+        boxFormulaire.add(
                 HelperForm.generateField("Marie/pacse", champsMarie));
 
 
@@ -325,9 +290,17 @@ public class FenetrePrincipale extends JFrame implements WindowListener {
             ois = new ObjectInputStream(fichier);
             Utilisateur utilisateurFichier = (Utilisateur)ois.readObject();
 
-            //----- hydrataion du formulaire ----
+            //----- hydratation du formulaire ----
 
-
+            selectCivilite.setSelectedItem(utilisateurFichier.getCivilite());
+            champsNom.getTextField().setText(utilisateurFichier.getNom());
+            champsPrenom.getTextField().setText(utilisateurFichier.getPrenom());
+            champsEmail.getTextField().setText(utilisateurFichier.getEmail());
+            selectPays.setSelectedItem(utilisateurFichier.getPays());
+            champsAge.getTextField().setText(
+                    String.valueOf(utilisateurFichier.getAge())
+            );
+            champsMarie.setSelected(utilisateurFichier.isMarie());
 
             ois.close();
 
@@ -344,54 +317,6 @@ public class FenetrePrincipale extends JFrame implements WindowListener {
         }
     }
 
-    public static void main(String[] args) {
-        FlatDarculaLaf.setup();
-        new FenetrePrincipale();
-    }
 
-    @Override
-    public void windowOpened(WindowEvent e) {
 
-    }
-
-    @Override
-    public void windowClosing(WindowEvent e) {
-        String[] choix = {"Oui", "Ne pas fermer l'application"};
-        int choixUtilisateur = JOptionPane.showOptionDialog(
-                this,
-                "Voulez-vous vraiment fermer l'application",
-                "Confirmer",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                choix,
-                choix[1]);
-
-        if(choixUtilisateur == JOptionPane.YES_OPTION) {
-            System.exit(1);
-        }
-    }
-
-    @Override
-    public void windowClosed(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowIconified(WindowEvent e) {
-    }
-
-    @Override
-    public void windowDeiconified(WindowEvent e) {
-    }
-
-    @Override
-    public void windowActivated(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowDeactivated(WindowEvent e) {
-
-    }
 }
