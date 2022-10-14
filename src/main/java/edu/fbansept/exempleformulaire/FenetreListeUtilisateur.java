@@ -7,13 +7,11 @@ import edu.fbansept.exempleformulaire.models.Utilisateur;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.util.ArrayList;
 
 public class FenetreListeUtilisateur extends JFrame implements WindowListener {
@@ -21,7 +19,7 @@ public class FenetreListeUtilisateur extends JFrame implements WindowListener {
     protected boolean themeSombreActif = true;
     protected DefaultTableModel model;
 
-    protected ArrayList<Utilisateur> listeUtilisateur;
+    protected ArrayList<Utilisateur> listeUtilisateur = new ArrayList<>();
 
     public FenetreListeUtilisateur() {
         setSize(800, 500);
@@ -64,13 +62,39 @@ public class FenetreListeUtilisateur extends JFrame implements WindowListener {
 
                     JOptionPane.showOptionDialog(
                             this,
-                            new FenetreFormulaire(listeUtilisateur),
+                            new FenetreFormulaire((nouvelUtilisateur) -> {
+                                listeUtilisateur.add(nouvelUtilisateur);
+
+                                ObjectOutputStream oos = null;
+
+                                try {
+                                    FileOutputStream fichier = new FileOutputStream("personne.eesc");
+
+                                    oos = new ObjectOutputStream(fichier);
+                                    oos.writeObject(listeUtilisateur);
+                                    oos.flush();
+                                    oos.close();
+
+                                    model.addRow(nouvelUtilisateur.getLigneTableau());
+                                    model.fireTableDataChanged();
+
+                                    JOptionPane.showMessageDialog(
+                                            this,
+                                            "L'utilisateur " + nouvelUtilisateur.getNom() + " a bien été ajouté");
+
+                                } catch (IOException ex) {
+                                    JOptionPane.showMessageDialog(
+                                            this,
+                                            "Impossible d'enregistrer l'utilisateur");
+                                }
+                            }),
                             "Ajouter un utilisateur",
                             JOptionPane.DEFAULT_OPTION,
                             JOptionPane.PLAIN_MESSAGE,
                             null,
                             new Object[]{},
-                            null);
+                            null
+                    );
                 }
         );
 
@@ -99,15 +123,27 @@ public class FenetreListeUtilisateur extends JFrame implements WindowListener {
         model.addColumn("Marié");
         model.addColumn("Actions");
 
+        JTable tableUtilisateur = new JTable(model){
+            public boolean editCellAt(int row, int column, java.util.EventObject e) {
+                return false;
+            }
+        };
 
-        JTable tableUtilisateur = new JTable(model);
-        tableUtilisateur.setEnabled(false);
+        tableUtilisateur.getColumn("Actions").setCellRenderer(
+                new ButtonRenderer()
+        );
 
         panneau.add(new JScrollPane(tableUtilisateur), BorderLayout.CENTER);
-
         ouvrirFichier();
-
         setVisible(true);
+    }
+
+    static class ButtonRenderer extends JButton implements TableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            addActionListener(e-> System.out.println("test"));
+            return this;
+        }
     }
 
 

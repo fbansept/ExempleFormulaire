@@ -7,6 +7,7 @@ import edu.fbansept.exempleformulaire.models.Utilisateur;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -29,11 +30,8 @@ public class FenetreFormulaire extends JPanel {
     protected ChampsSaisie champsAge;
     protected JCheckBox champsMarie;
 
-    protected ArrayList<Utilisateur> listeUtilisateur;
 
-    public FenetreFormulaire(ArrayList<Utilisateur> listeUtilisateur) {
-
-        this.listeUtilisateur = listeUtilisateur;
+    public FenetreFormulaire(OnClickAjouter callback) {
 
         setSize(500,500);
 
@@ -244,27 +242,7 @@ public class FenetreFormulaire extends JPanel {
                         champsMarie.isSelected()
                 );
 
-                listeUtilisateur.add(nouvelUtilisateur);
-
-                ObjectOutputStream oos = null;
-
-                try {
-                    FileOutputStream fichier = new FileOutputStream("personne.eesc");
-
-                    oos = new ObjectOutputStream(fichier);
-                    oos.writeObject(listeUtilisateur);
-                    oos.flush();
-                    oos.close();
-
-                    JOptionPane.showMessageDialog(
-                            this,
-                            "L'utilisateur " + nouvelUtilisateur.getNom() + " a bien été ajouté");
-
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(
-                            this,
-                            "Impossible d'enregistrer l'utilisateur");
-                }
+                callback.executer(nouvelUtilisateur);
             }
         });
 
