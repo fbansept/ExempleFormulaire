@@ -5,10 +5,13 @@ import com.formdev.flatlaf.FlatLightLaf;
 import edu.fbansept.exempleformulaire.models.Pays;
 import edu.fbansept.exempleformulaire.models.Utilisateur;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.*;
@@ -52,8 +55,6 @@ public class FenetreListeUtilisateur extends JFrame implements WindowListener {
                     }
                 }
         );
-
-
 
 
         JButton boutonAjoutUtilisateur = new JButton("Ajouter un utilisateur");
@@ -123,29 +124,56 @@ public class FenetreListeUtilisateur extends JFrame implements WindowListener {
         model.addColumn("Marié");
         model.addColumn("Actions");
 
-        JTable tableUtilisateur = new JTable(model){
-            public boolean editCellAt(int row, int column, java.util.EventObject e) {
-                return false;
-            }
-        };
+
+
+        JTable tableUtilisateur = new JTable(model);
+
+
+
+        ImageIcon errorIcon;
+
+        try {
+            errorIcon = new ImageIcon(
+                    ImageIO.read(new File("src/main/resources/icones/error.png"))
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         tableUtilisateur.getColumn("Actions").setCellRenderer(
-                new ButtonRenderer()
+                (table, value, isSelected, hasFocus, row, column) -> {
+                    JLabel label = new JLabel();
+                    label.setIcon(errorIcon);
+                    return label;
+                }
+        );
+
+        tableUtilisateur.getColumn("Actions").setCellEditor(
+                new DefaultCellEditor(new JCheckBox()) {
+                    public Component getTableCellEditorComponent(
+                            JTable table, Object value, boolean isSelected, int row, int column) {
+                        JLabel icone = new JLabel();
+                        icone.setIcon(errorIcon);
+                        icone.addMouseListener(new MouseListener() {
+                            @Override
+                            public void mouseReleased(MouseEvent e) {
+                                System.out.println(listeUtilisateur.get(row).getNom());
+                            }
+
+                            public void mouseClicked(MouseEvent e) { }
+                            public void mousePressed(MouseEvent e) { }
+                            public void mouseEntered(MouseEvent e) {}
+                            public void mouseExited(MouseEvent e) {}
+                        });
+                        return icone;
+                    }
+                }
         );
 
         panneau.add(new JScrollPane(tableUtilisateur), BorderLayout.CENTER);
         ouvrirFichier();
         setVisible(true);
     }
-
-    static class ButtonRenderer extends JButton implements TableCellRenderer {
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            addActionListener(e-> System.out.println("test"));
-            return this;
-        }
-    }
-
 
     public void ouvrirFichier() {
 
@@ -154,9 +182,9 @@ public class FenetreListeUtilisateur extends JFrame implements WindowListener {
         try {
             FileInputStream fichier = new FileInputStream("personne.eesc");
             ois = new ObjectInputStream(fichier);
-            listeUtilisateur = (ArrayList<Utilisateur>)ois.readObject();
+            listeUtilisateur = (ArrayList<Utilisateur>) ois.readObject();
 
-            for(Utilisateur utilisateurFichier : listeUtilisateur) {
+            for (Utilisateur utilisateurFichier : listeUtilisateur) {
                 model.addRow(utilisateurFichier.getLigneTableau());
             }
 
