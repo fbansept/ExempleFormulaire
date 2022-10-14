@@ -13,6 +13,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,7 +29,11 @@ public class FenetreFormulaire extends JPanel {
     protected ChampsSaisie champsAge;
     protected JCheckBox champsMarie;
 
-    public FenetreFormulaire() {
+    protected ArrayList<Utilisateur> listeUtilisateur;
+
+    public FenetreFormulaire(ArrayList<Utilisateur> listeUtilisateur) {
+
+        this.listeUtilisateur = listeUtilisateur;
 
         setSize(500,500);
 
@@ -239,13 +244,15 @@ public class FenetreFormulaire extends JPanel {
                         champsMarie.isSelected()
                 );
 
+                listeUtilisateur.add(nouvelUtilisateur);
+
                 ObjectOutputStream oos = null;
 
                 try {
                     FileOutputStream fichier = new FileOutputStream("personne.eesc");
 
                     oos = new ObjectOutputStream(fichier);
-                    oos.writeObject(nouvelUtilisateur);
+                    oos.writeObject(listeUtilisateur);
                     oos.flush();
                     oos.close();
 

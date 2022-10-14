@@ -10,12 +10,21 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.ArrayList;
 
 public class FenetreListeUtilisateur extends JFrame implements WindowListener {
 
     protected boolean themeSombreActif = true;
+    protected DefaultTableModel model;
+
+    protected ArrayList<Utilisateur> listeUtilisateur;
+
     public FenetreListeUtilisateur() {
-        setSize(800,500);
+        setSize(800, 500);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
         addWindowListener(this);
@@ -32,7 +41,7 @@ public class FenetreListeUtilisateur extends JFrame implements WindowListener {
         boutonTheme.addActionListener(
                 e -> {
                     try {
-                        if(themeSombreActif) {
+                        if (themeSombreActif) {
                             UIManager.setLookAndFeel(new FlatLightLaf());
                         } else {
                             UIManager.setLookAndFeel(new FlatDarculaLaf());
@@ -47,16 +56,21 @@ public class FenetreListeUtilisateur extends JFrame implements WindowListener {
         );
 
 
-        FenetreFormulaire fenetreFormulaire = new FenetreFormulaire();
+
 
         JButton boutonAjoutUtilisateur = new JButton("Ajouter un utilisateur");
         boutonAjoutUtilisateur.addActionListener(
                 e -> {
-                    JOptionPane.showMessageDialog(
+
+                    JOptionPane.showOptionDialog(
                             this,
-                            fenetreFormulaire,
+                            new FenetreFormulaire(listeUtilisateur),
                             "Ajouter un utilisateur",
-                            JOptionPane.PLAIN_MESSAGE);
+                            JOptionPane.DEFAULT_OPTION,
+                            JOptionPane.PLAIN_MESSAGE,
+                            null,
+                            new Object[]{},
+                            null);
                 }
         );
 
@@ -65,17 +79,17 @@ public class FenetreListeUtilisateur extends JFrame implements WindowListener {
         Box boxBoutonHaut = Box.createVerticalBox();
 
         boxBoutonHaut.add(
-                HelperForm.generateRow(boutonTheme,10,10,0,0, HelperForm.ALIGN_RIGHT)
+                HelperForm.generateRow(boutonTheme, 10, 10, 0, 0, HelperForm.ALIGN_RIGHT)
         );
         boxBoutonHaut.add(
-                HelperForm.generateRow(boutonAjoutUtilisateur,10,0,0,10, HelperForm.ALIGN_LEFT)
+                HelperForm.generateRow(boutonAjoutUtilisateur, 10, 0, 0, 10, HelperForm.ALIGN_LEFT)
         );
 
-        panneau.add(boxBoutonHaut,BorderLayout.NORTH);
+        panneau.add(boxBoutonHaut, BorderLayout.NORTH);
 
         //----------- TABLE UTILISATEUR ------------
 
-        DefaultTableModel model = new DefaultTableModel();
+        model = new DefaultTableModel();
         model.addColumn("Civilité");
         model.addColumn("Nom");
         model.addColumn("Prénom");
@@ -86,26 +100,44 @@ public class FenetreListeUtilisateur extends JFrame implements WindowListener {
         model.addColumn("Actions");
 
 
-
         JTable tableUtilisateur = new JTable(model);
         tableUtilisateur.setEnabled(false);
 
-        panneau.add(new JScrollPane(tableUtilisateur),BorderLayout.CENTER);
+        panneau.add(new JScrollPane(tableUtilisateur), BorderLayout.CENTER);
 
-        Utilisateur utilisateurTest = new Utilisateur(
-                "Monsieur",
-                "BANSEPT",
-                "Franck",
-                "bansept.franck@gmail.com",
-                new Pays("FRANCE","FR","fr.png"),
-                35,
-                true);
-
-        model.addRow(utilisateurTest.getLigneTableau());
+        ouvrirFichier();
 
         setVisible(true);
     }
 
+
+    public void ouvrirFichier() {
+
+        ObjectInputStream ois = null;
+
+        try {
+            FileInputStream fichier = new FileInputStream("personne.eesc");
+            ois = new ObjectInputStream(fichier);
+            listeUtilisateur = (ArrayList<Utilisateur>)ois.readObject();
+
+            for(Utilisateur utilisateurFichier : listeUtilisateur) {
+                model.addRow(utilisateurFichier.getLigneTableau());
+            }
+
+            ois.close();
+
+        } catch (FileNotFoundException e) {
+            System.out.println("Première fois qu'on ouvre l'application");
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Impossible d'ouvrir le fichier");
+        } catch (ClassNotFoundException | ClassCastException e) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Fichier corrompu");
+        }
+    }
 
 
     public static void main(String[] args) {
@@ -131,7 +163,7 @@ public class FenetreListeUtilisateur extends JFrame implements WindowListener {
                 choix,
                 choix[1]);
 
-        if(choixUtilisateur == JOptionPane.YES_OPTION) {
+        if (choixUtilisateur == JOptionPane.YES_OPTION) {
             System.exit(1);
         }
     }
