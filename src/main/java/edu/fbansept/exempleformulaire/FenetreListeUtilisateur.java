@@ -2,8 +2,11 @@ package edu.fbansept.exempleformulaire;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatLightLaf;
+import edu.fbansept.exempleformulaire.models.Pays;
+import edu.fbansept.exempleformulaire.models.Utilisateur;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -12,7 +15,7 @@ public class FenetreListeUtilisateur extends JFrame implements WindowListener {
 
     protected boolean themeSombreActif = true;
     public FenetreListeUtilisateur() {
-        setSize(500,500);
+        setSize(800,500);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
         addWindowListener(this);
@@ -44,8 +47,18 @@ public class FenetreListeUtilisateur extends JFrame implements WindowListener {
         );
 
 
-        JButton boutonAjoutUtilisateur = new JButton("Ajouter un utilisateur");
+        FenetreFormulaire fenetreFormulaire = new FenetreFormulaire();
 
+        JButton boutonAjoutUtilisateur = new JButton("Ajouter un utilisateur");
+        boutonAjoutUtilisateur.addActionListener(
+                e -> {
+                    JOptionPane.showMessageDialog(
+                            this,
+                            fenetreFormulaire,
+                            "Ajouter un utilisateur",
+                            JOptionPane.PLAIN_MESSAGE);
+                }
+        );
 
         //---------- BOUTONS DU HAUT -------
 
@@ -59,6 +72,36 @@ public class FenetreListeUtilisateur extends JFrame implements WindowListener {
         );
 
         panneau.add(boxBoutonHaut,BorderLayout.NORTH);
+
+        //----------- TABLE UTILISATEUR ------------
+
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Civilité");
+        model.addColumn("Nom");
+        model.addColumn("Prénom");
+        model.addColumn("Email");
+        model.addColumn("Pays");
+        model.addColumn("Age");
+        model.addColumn("Marié");
+        model.addColumn("Actions");
+
+
+
+        JTable tableUtilisateur = new JTable(model);
+        tableUtilisateur.setEnabled(false);
+
+        panneau.add(new JScrollPane(tableUtilisateur),BorderLayout.CENTER);
+
+        Utilisateur utilisateurTest = new Utilisateur(
+                "Monsieur",
+                "BANSEPT",
+                "Franck",
+                "bansept.franck@gmail.com",
+                new Pays("FRANCE","FR","fr.png"),
+                35,
+                true);
+
+        model.addRow(utilisateurTest.getLigneTableau());
 
         setVisible(true);
     }

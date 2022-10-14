@@ -16,8 +16,7 @@ import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FenetreFormulaire extends JFrame {
-
+public class FenetreFormulaire extends JPanel {
 
     protected int defaultMargin = 10;
 
@@ -32,13 +31,9 @@ public class FenetreFormulaire extends JFrame {
     public FenetreFormulaire() {
 
         setSize(500,500);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        //ajout du panneau principal avec un layout de 5 zones
-        // (NORTH, SOUTH, EAST, WEST, CENTER)
-        JPanel panneau = new JPanel(new BorderLayout());
-        setContentPane(panneau);
-
+        //ajout du layout de 5 zones (NORTH, SOUTH, EAST, WEST, CENTER)
+        setLayout(new BorderLayout());
 
         //---------------- FORMULAIRE ------------------
 
@@ -46,7 +41,7 @@ public class FenetreFormulaire extends JFrame {
         Box boxFormulaire = Box.createVerticalBox();
         //formulaire.setBorder(BorderFactory.createLineBorder(Color.RED));
 
-        panneau.add(boxFormulaire, BorderLayout.CENTER);
+        add(boxFormulaire, BorderLayout.CENTER);
 
 
         //---------------- LISTE CIVILITE ------------------
@@ -272,13 +267,10 @@ public class FenetreFormulaire extends JFrame {
 
         boutonValider.setSize(new Dimension(100, 30));
 
-        panneau.add(
+        add(
                 HelperForm.generateRow(boutonValider,0,10,10,0, HelperForm.ALIGN_RIGHT),
                 BorderLayout.SOUTH);
 
-        ouvrirFichier();
-
-        setVisible(true);
     }
 
     public void ouvrirFichier() {
